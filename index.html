@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Leitura Dinâmica Prática — Leia o dobro, em cerca de um mês</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1a1a55;
+    --navy-2:#24246f;
+    --navy-deep:#0f0f33;
+    --facet:#3a3a8e;
+    --paper:#f4f5fb;
+    --paper-2:#eaecf6;
+    --white:#ffffff;
+    --ink:#1a1b2e;
+    --ink-soft:#54566f;
+    --ink-faint:#8a8ca6;
+    --gold:#e7a233;
+    --gold-deep:#c5841a;
+    --gold-soft:#f6cd7e;
+    --green:#2e7d52;
+    --red:#c0392b;
+    --line:#e0e2f0;
+    --line-d:rgba(255,255,255,.13);
+    --display:"Archivo",sans-serif;
+    --body:"Hanken Grotesk",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  .narrow{max-width:780px}
+  section{padding:92px 0;position:relative}
+  h1,h2,h3,h4{font-family:var(--display);font-weight:800;line-height:1.04;letter-spacing:-.02em}
+  h2{font-size:clamp(30px,5vw,50px);margin-bottom:20px}
+  h3{font-size:clamp(22px,3vw,30px)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:34px;height:2px;background:var(--gold)}
+  p.lead{font-size:clamp(18px,2.3vw,21px);color:var(--ink-soft);max-width:62ch}
+
+  /* sections on navy */
+  .dark{background:var(--navy);color:#eef0ff}
+  .dark h2,.dark h3{color:#fff}
+  .dark p.lead{color:#c4c7e8}
+  .dark .eyebrow{color:var(--gold-soft)}
+  .dark .eyebrow::before{background:var(--gold)}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:11px;cursor:pointer;border:none;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.01em;padding:17px 30px;border-radius:3px;text-decoration:none;transition:.24s;background:var(--gold);color:var(--navy-deep)}
+  .btn:hover{background:var(--gold-deep);transform:translateY(-2px);box-shadow:0 12px 28px -12px rgba(199,132,26,.7)}
+  .btn.navy{background:var(--navy);color:#fff}
+  .btn.navy:hover{background:var(--navy-2);box-shadow:0 12px 28px -14px rgba(26,26,85,.7)}
+  .btn.ghost{background:transparent;color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
+  .btn.ghost:hover{background:var(--navy);color:#fff}
+  .dark .btn.ghost{color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+  .dark .btn.ghost:hover{background:#fff;color:var(--navy)}
+  .arrow{transition:transform .24s}.btn:hover .arrow{transform:translateX(4px)}
+
+  /* topbar */
+  .topbar{position:absolute;top:0;left:0;right:0;z-index:20;padding:20px 0}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{height:48px;width:auto;border-radius:50%}
+  .brand .bn{font-family:var(--display);font-weight:800;font-size:13px;color:#fff;line-height:1.1;letter-spacing:.06em;text-transform:uppercase}
+  .topbar .btn{padding:11px 20px;font-size:13px}
+
+  /* HERO */
+  .hero{background:var(--navy);color:#fff;min-height:100svh;display:flex;align-items:center;padding:120px 0 70px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:-10%;right:-5%;width:60%;height:120%;background:linear-gradient(135deg,var(--facet),transparent 55%);opacity:.5;transform:skewX(-12deg);pointer-events:none}
+  .hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:34%;background:linear-gradient(180deg,transparent,var(--navy-deep));pointer-events:none}
+  .hero .wrap{position:relative;z-index:2}
+  .hero h1{font-size:clamp(42px,8vw,86px);font-weight:900;margin:16px 0 26px;letter-spacing:-.03em}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero .lead{color:#c8cbeb;margin-bottom:14px}
+  .hero .sub{font-size:16px;color:#9698c4;max-width:56ch;margin-bottom:38px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .reveal{opacity:0;transform:translateY(22px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.05s}.d2{animation-delay:.16s}.d3{animation-delay:.28s}.d4{animation-delay:.4s}.d5{animation-delay:.54s}
+  .hero-stats{display:flex;gap:36px;margin-top:56px;flex-wrap:wrap}
+  .stat{border-left:2px solid var(--line-d);padding-left:16px}
+  .stat .n{font-family:var(--display);font-weight:800;font-size:32px;color:var(--gold);line-height:1}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9698c4;margin-top:8px}
+
+  /* card */
+  .card{background:var(--white);border:1.5px solid var(--line);border-radius:6px;padding:clamp(24px,4vw,44px);box-shadow:0 22px 60px -34px rgba(26,26,85,.4)}
+  .dark .card{background:rgba(255,255,255,.04);border-color:var(--line-d)}
+
+  /* PPM test */
+  .timer{font-family:var(--mono);font-size:clamp(40px,9vw,62px);font-weight:500;color:var(--navy)}
+  .timer .ms{font-size:.42em;color:var(--ink-faint)}
+  .controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  .test-head{display:grid;grid-template-columns:1fr minmax(180px,300px);gap:30px;align-items:center}
+  .test-head .castle{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;box-shadow:0 16px 40px -24px rgba(26,26,85,.5);display:block}
+  @media(max-width:640px){.test-head{grid-template-columns:1fr}.test-head .castle{order:-1;aspect-ratio:16/9;max-height:200px}}
+  .reader{font-size:clamp(17px,2.1vw,20px);line-height:1.85;margin:0;max-height:0;overflow:hidden;opacity:0;transition:opacity .5s}
+  .reader.show{max-height:none;opacity:1;border-left:3px solid var(--gold);padding-left:22px;margin:26px 0 30px}
+  .reader p{margin-bottom:14px}
+  .reader .title{font-family:var(--display);font-weight:800;font-size:24px;color:var(--navy);margin-bottom:16px}
+  .result{display:none}.result.show{display:block;animation:rise .6s ease forwards}
+  .ppm-big{font-family:var(--display);font-weight:900;font-size:clamp(70px,16vw,138px);line-height:.9;color:var(--gold)}
+  .ppm-big small{font-family:var(--mono);font-size:15px;letter-spacing:.08em;color:var(--ink-faint);display:block;font-weight:400;margin-top:8px}
+  .verdict{font-size:clamp(20px,3vw,28px);font-family:var(--display);font-weight:800;color:var(--navy);margin:18px 0 8px;max-width:26ch}
+  .verdict-sub{color:var(--ink-soft);max-width:54ch}
+  .gauge{height:10px;background:var(--paper-2);border:1.5px solid var(--line);border-radius:20px;margin:26px 0 8px;overflow:hidden}
+  .gauge .fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:20px;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+  .gauge-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint)}
+  .quiz{margin-top:34px;border-top:1px dashed var(--line);padding-top:30px;display:none}.quiz.show{display:block;animation:rise .6s ease forwards}
+  .q{margin-bottom:22px}.q .qt{font-family:var(--display);font-weight:700;font-size:19px;margin-bottom:12px;color:var(--navy)}
+  .opts{display:flex;gap:10px;flex-wrap:wrap}
+  .opt{font-family:var(--mono);font-size:13px;padding:11px 16px;border-radius:3px;cursor:pointer;background:var(--white);box-shadow:inset 0 0 0 1.5px var(--line);transition:.2s}
+  .opt:hover{box-shadow:inset 0 0 0 1.5px var(--navy)}
+  .opt.right{background:var(--green);color:#fff;box-shadow:none}
+  .opt.wrong{background:var(--red);color:#fff;box-shadow:none}
+  .opt.disabled{pointer-events:none;opacity:.55}
+  .capture{margin-top:34px;background:var(--navy);color:#fff;border-radius:6px;padding:clamp(24px,4vw,40px);display:none}.capture.show{display:block;animation:rise .6s ease forwards}
+  .capture h3{color:#fff;margin-bottom:12px}.capture h3 em{color:var(--gold);font-style:normal}
+  .capture p{color:#c4c7e8;max-width:50ch;margin-bottom:24px;font-size:16px}
+  .field{display:flex;gap:12px;flex-wrap:wrap}
+  .field input{flex:1;min-width:220px;font-family:var(--body);font-size:16px;padding:15px 18px;border-radius:3px;border:none;background:#2a2a6b;color:#fff}
+  .field input::placeholder{color:#9698c4}
+  .capture .ok{display:none;font-family:var(--mono);font-size:14px;color:var(--gold);margin-top:12px}.capture .ok.show{display:block}
+
+  /* flash */
+  .stage{background:var(--navy-deep);border:1.5px solid var(--line-d);border-radius:6px;aspect-ratio:16/10;width:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:26px 0}
+  .stage .countdown{font-family:var(--display);font-weight:900;font-size:82px;color:#fff;opacity:.92}
+  .stage .flashbox{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#fff}
+  .stage .flashbox svg{width:60%;height:60%}
+  .stage .idle-txt{font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:#9698c4;text-align:center;padding:0 22px;line-height:1.7}
+  .dur-row,.speed-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:8px 0 20px}
+  .chip{font-family:var(--mono);font-size:12.5px;padding:9px 14px;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px var(--line-d);color:#c8cbeb;transition:.2s}
+  .chip:hover{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)}
+  .chip.on{background:var(--gold);color:var(--navy-deep);box-shadow:none;font-weight:600}
+  .light-chips .chip{background:var(--white);color:var(--ink-soft);box-shadow:inset 0 0 0 1.5px var(--line)}
+  .light-chips .chip:hover{box-shadow:inset 0 0 0 1.5px var(--navy)}
+  .light-chips .chip.on{background:var(--gold);color:var(--navy-deep);box-shadow:none}
+  .flash-q{display:none;margin-top:20px}.flash-q.show{display:block;animation:rise .5s ease forwards}
+  .dark .opt{background:rgba(255,255,255,.05);color:#eef0ff;box-shadow:inset 0 0 0 1.5px var(--line-d)}
+  .dark .q .qt{color:#fff}
+
+  /* rsvp */
+  .rsvp-stage{background:var(--white);border:1.5px solid var(--line);border-radius:6px;height:180px;display:flex;align-items:center;justify-content:center;margin:24px 0}
+  .rsvp-word{font-family:var(--display);font-weight:800;font-size:clamp(34px,7vw,58px);color:var(--navy);min-height:1em}
+  .note{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);letter-spacing:.02em}
+  .dark .note{color:#9698c4}
+
+  /* learn grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:36px}
+  .lcard{background:var(--white);border:1.5px solid var(--line);border-radius:6px;padding:26px}
+  .lcard .ic{font-family:var(--display);font-weight:900;font-size:22px;color:var(--gold-deep);background:var(--paper-2);width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .lcard h4{font-size:18px;color:var(--navy);margin-bottom:8px}
+  .lcard p{font-size:15.5px;color:var(--ink-soft);line-height:1.55}
+
+  /* professor */
+  .prof{display:grid;grid-template-columns:200px 1fr;gap:40px;align-items:start}
+  .prof .photo{aspect-ratio:1;border-radius:8px;background:linear-gradient(150deg,var(--navy-2),var(--navy-deep));overflow:hidden;border:1.5px solid var(--line-d)}
+  .prof .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .prof p{color:#c8cbeb;margin-bottom:14px}
+  .prof .sig{font-family:var(--display);font-weight:800;color:#fff;font-size:18px;margin-top:6px}
+  .prof .sig span{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.1em;color:var(--gold-soft);margin-top:4px}
+  @media(max-width:620px){.prof{grid-template-columns:1fr}.prof .photo{max-width:180px}}
+
+  /* testimonials */
+  .tgrid{columns:3 280px;column-gap:18px;margin-top:36px}
+  .tcard{background:var(--white);border:1.5px solid var(--line);border-radius:6px;padding:26px;position:relative;break-inside:avoid;margin-bottom:18px;display:inline-block;width:100%}
+  .tcard .stars{color:var(--gold);font-size:15px;letter-spacing:2px;margin-bottom:14px}
+  .tcard .quote{font-size:16.5px;color:var(--ink);line-height:1.6;margin-bottom:18px;font-style:italic}
+  .tcard .who{display:flex;align-items:center;gap:12px}
+  .tcard .av{width:42px;height:42px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;color:var(--navy)}
+  .tcard .who .nm{font-family:var(--display);font-weight:700;font-size:15px;color:var(--navy)}
+  .tcard .who .rl{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em}
+  .placeholder-note{background:var(--gold-soft);color:#5a3d00;font-family:var(--mono);font-size:12.5px;padding:14px 18px;border-radius:6px;margin-top:22px;line-height:1.6}
+
+  /* numbers band */
+  .band{display:flex;justify-content:center;gap:60px;flex-wrap:wrap;text-align:center}
+  .band .n{font-family:var(--display);font-weight:900;font-size:clamp(40px,7vw,64px);color:var(--gold);line-height:1}
+  .band .rate-stars{font-size:26px;letter-spacing:3px;line-height:1;margin-bottom:6px}
+  .band .rate-stars b{color:var(--gold)}
+  .band .rate-stars .half{background:linear-gradient(90deg,var(--gold) 45%,rgba(255,255,255,.22) 45%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .band .l{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:#c4c7e8;text-transform:uppercase;margin-top:10px}
+
+  /* offer */
+  .offer{background:var(--white);border:2px solid var(--navy);border-radius:8px;padding:clamp(28px,5vw,48px);box-shadow:0 30px 70px -40px rgba(26,26,85,.5);max-width:680px;margin:36px auto 0}
+  .offer .ribbon{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+  .stack{list-style:none;margin:24px 0}
+  .stack li{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--line);font-size:16.5px}
+  .stack li:last-child{border-bottom:none}
+  .stack .ck{color:var(--green);font-weight:800;flex-shrink:0}
+  .price-block{text-align:center;margin:28px 0 8px}
+  .price-block .from{font-family:var(--mono);font-size:14px;color:var(--ink-faint)}
+  .price-block .from s{opacity:.7}
+  .price-block .big{font-family:var(--display);font-weight:900;font-size:clamp(48px,10vw,76px);color:var(--navy);line-height:1}
+  .price-block .big small{font-size:.4em;color:var(--ink-soft);font-weight:700}
+  .price-block .inst{font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-top:6px}
+  .guarantee{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);text-align:center;margin-top:18px;line-height:1.6}
+
+  /* faq */
+  .faq{max-width:780px;margin:36px auto 0}
+  .faq details{border-bottom:1.5px solid var(--line);padding:20px 0}
+  .faq summary{font-family:var(--display);font-weight:700;font-size:18px;color:var(--navy);cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-family:var(--mono);color:var(--gold-deep);font-size:22px;transition:.2s}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq p{color:var(--ink-soft);margin-top:14px;font-size:16px}
+
+  /* final */
+  .final{text-align:center}
+  .final h2 em{font-style:normal;color:var(--gold)}
+  .final p{color:#c4c7e8;max-width:48ch;margin:0 auto 32px}
+  .final .price{font-family:var(--mono);font-size:14px;color:#9698c4;margin-top:22px}
+  .final .price b{color:var(--gold);font-size:20px}
+  footer{background:var(--navy-deep);color:#7678a8;text-align:center;padding:40px 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em}
+
+  @media(max-width:600px){section{padding:64px 0}.hero-stats{gap:22px}.field input{min-width:100%}.band{gap:36px}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <img src="Logo-LDP.webp" alt="Leitura Dinâmica Prática" onerror="this.style.display='none'">
+      <div class="bn">Leitura Dinâmica<br>Prática</div>
+    </div>
+    <a href="#oferta" class="btn">Quero o curso</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap narrow">
+    <div class="eyebrow reveal d1">O experimento de 2 minutos</div>
+    <h1 class="reveal d2">Quantas palavras<br>por minuto<br><em>você lê?</em></h1>
+    <p class="lead reveal d3">Faça o teste abaixo com um conto curto e descubra o seu número real — leva 2 minutos.</p>
+    <p class="sub reveal d4">A maioria lê entre 120 e 180, o ritmo que aprendeu na escola. Não é falta de inteligência: é falta de técnica. E dá pra dobrar em cerca de um mês.</p>
+    <div class="hero-cta reveal d5">
+      <a href="#teste" class="btn">Descobrir minha velocidade — grátis <span class="arrow">→</span></a>
+      <a href="#oferta" class="btn ghost">Ver o curso</a>
+    </div>
+    <div class="hero-stats reveal d5">
+      <div class="stat"><div class="n">13ms</div><div class="l">o cérebro capta<br>uma imagem</div></div>
+      <div class="stat"><div class="n">2×</div><div class="l">a velocidade<br>que dá pra dobrar</div></div>
+      <div class="stat"><div class="n">12</div><div class="l">livros por ano,<br>1 por mês</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- PPM TEST -->
+<section id="teste">
+  <div class="wrap narrow">
+    <div class="eyebrow">Experimento 01 — Velocidade</div>
+    <h2>Leia o conto. Sem pressa, sem trapaça.</h2>
+    <p class="lead">Ao clicar em começar, o texto aparece e o cronômetro dispara junto. Leia no seu ritmo natural. Ao terminar, pare o relógio — e não minta pra você mesmo.</p>
+
+    <div class="card" style="margin-top:34px">
+      <div class="test-head">
+        <div>
+          <div class="timer" id="timer">00:00<span class="ms">.0</span></div>
+          <div class="controls">
+            <button class="btn" id="startBtn">Começar a ler <span class="arrow">→</span></button>
+            <button class="btn ghost" id="stopBtn" style="display:none">Terminei de ler</button>
+          </div>
+        </div>
+        <img class="castle" src="castle.webp" alt="O castelo do conto" onerror="this.style.display='none'">
+      </div>
+      <div class="reader" id="reader">
+        <p class="title">A princesa e o sapo</p>
+        <p>Era uma vez uma princesa que vivia em um reino muito distante. Ela passava as tardes brincando com sua bola de ouro nos jardins do castelo. Um dia a bola caiu dentro do lago e a princesa ficou muito triste. Nessa hora, surgiu um sapo que lhe perguntou o porquê de tamanha tristeza. Sabendo do ocorrido, o sapo então prometeu resgatar a bola da jovem, mas havia uma condição: que ela lhe desse um beijo. A princesa concordou, pois queria muito a bola. Entretanto, assim que teve o objeto em suas mãos, ela correu para o castelo sem ao menos agradecer. O sapo ficou muito frustrado e gritou:</p>
+        <p>— Mas princesa, você me prometeu! A partir daí, o sapinho passou a acompanhar a princesa em todos os lugares, exigindo sua recompensa. Um dia, cansado, o sapo foi até o rei e disse: — A princesa me prometeu um beijo, pois resgatei sua bola de ouro. Mas ela não quer cumprir sua promessa. O rei chamou a filha e lhe disse que uma promessa real deve sempre ser cumprida. Assim, a princesa tomou coragem e, finalmente, beijou o sapo. Para sua surpresa, o sapo asqueroso se transformou em um lindo príncipe e os dois se apaixonaram, vivendo felizes para sempre.</p>
+      </div>
+      <div class="result" id="result">
+        <div class="ppm-big" id="ppmNum">0<small id="wordInfo">palavras por minuto</small></div>
+        <div class="gauge"><div class="fill" id="gaugeFill"></div></div>
+        <div class="gauge-labels"><span>100</span><span>200</span><span>300</span><span>400+</span></div>
+        <div class="verdict" id="verdict"></div>
+        <p class="verdict-sub" id="verdictSub"></p>
+      </div>
+      <div class="capture" id="capture">
+        <h3 id="captureTitle">Bora dobrar esse número?</h3>
+        <p>Receba de graça os primeiros exercícios do método — os mesmos que destravam a leitura e que você treina em 5 minutos por dia. Vai direto pro seu e-mail, sem enrolação.</p>
+        <div class="field"><input type="email" id="emailInput" placeholder="seu melhor e-mail" autocomplete="email"><button class="btn" id="emailBtn">Quero os exercícios grátis <span class="arrow">→</span></button></div>
+        <div class="ok" id="emailOk">✓ Pronto! Confere sua caixa de entrada. (Demo: aqui conecta no e-mail / Hotmart do Davis.)</div>
+      </div>
+      <div class="quiz" id="quiz">
+        <div class="eyebrow" style="margin-bottom:14px">Experimento 02 — Absorção (bônus)</div>
+        <p class="verdict-sub" style="margin-bottom:22px">Velocidade sem retenção é só correr os olhos. Sem voltar ao texto: o que ficou?</p>
+        <div class="q" data-answer="bola de ouro"><div class="qt">Qual era o brinquedo da princesa?</div><div class="opts"><span class="opt">um espelho</span><span class="opt">bola de ouro</span><span class="opt">uma coroa</span></div></div>
+        <div class="q" data-answer="um beijo"><div class="qt">O que o sapo exigiu em troca de resgatar a bola?</div><div class="opts"><span class="opt">metade do reino</span><span class="opt">um beijo</span><span class="opt">morar no castelo</span></div></div>
+        <div class="q" data-answer="o rei"><div class="qt">Quem obrigou a princesa a cumprir a promessa?</div><div class="opts"><span class="opt">a rainha</span><span class="opt">o rei</span><span class="opt">uma fada</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MECHANISM 13ms -->
+<section class="dark">
+  <div class="wrap narrow">
+    <div class="eyebrow">Experimento 03 — Percepção</div>
+    <h2>Seu cérebro é mais rápido<br>do que a sua leitura.</h2>
+    <p class="lead">Pesquisadores mostraram que o cérebro identifica uma imagem em até 13 milésimos de segundo — menos de um piscar de olhos. Então, se você capta uma imagem nesse tempo, por que ainda lê palavra por palavra?</p>
+    <div class="card" style="margin-top:34px">
+      <p class="note" style="margin-bottom:8px">Escolha por quanto tempo a imagem vai aparecer:</p>
+      <div class="dur-row" id="durRow">
+        <span class="chip on" data-ms="600">600 ms</span>
+        <span class="chip" data-ms="300">300 ms</span>
+        <span class="chip" data-ms="120">120 ms</span>
+        <span class="chip" data-ms="60">60 ms</span>
+        <span class="chip" data-ms="30">30 ms · limite da tela</span>
+      </div>
+      <div class="stage" id="stage">
+        <div class="idle-txt" id="stageIdle">A imagem vai piscar uma única vez.<br>Olhe fixo para o centro.</div>
+        <div class="countdown" id="countdown" style="display:none"></div>
+        <div class="flashbox" id="flashbox"></div>
+      </div>
+      <button class="btn" id="flashBtn">Piscar a imagem <span class="arrow">→</span></button>
+      <div class="flash-q" id="flashQ"><div class="q" style="margin-top:8px"><div class="qt">O que apareceu na tela?</div><div class="opts" id="flashOpts"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- RSVP -->
+<section>
+  <div class="wrap narrow">
+    <div class="eyebrow">Experimento 04 — Ler como imagem</div>
+    <h2>Agora sinta os 400.</h2>
+    <p class="lead">A mesma história, palavra por palavra no centro da tela — sem o olho precisar caminhar pela linha. Comece devagar e acelere no meio: a 400 ppm você termina o conto em menos de um minuto.</p>
+    <div class="card" style="margin-top:34px">
+      <div class="speed-row light-chips" id="speedRow">
+        <span class="note" style="margin:0">Velocidade:</span>
+        <span class="chip" data-wpm="200">200 ppm</span>
+        <span class="chip on" data-wpm="300">300 ppm</span>
+        <span class="chip" data-wpm="400">400 ppm</span>
+        <span class="chip" data-wpm="600">600 ppm</span>
+      </div>
+      <div class="rsvp-stage"><div class="rsvp-word" id="rsvpWord">pronto?</div></div>
+      <div class="controls">
+        <button class="btn" id="rsvpBtn">Iniciar leitura guiada <span class="arrow">→</span></button>
+        <button class="btn ghost" id="rsvpStop" style="display:none">Parar e reiniciar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU LEARN -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">O que muda na sua leitura</div>
+    <h2>Não é "ler corrido".<br>É retreinar o jeito que você lê.</h2>
+    <p class="lead">O método é prático e medido do começo ao fim. Você trata a leitura como um músculo: exercício diário, número na tela, evolução visível.</p>
+    <div class="grid">
+      <div class="lcard"><div class="ic">2×</div><h4>Dobre seu PPM</h4><p>Saia do ritmo da escola (120–180) para 300–400 palavras por minuto, com exercícios cronometrados.</p></div>
+      <div class="lcard"><div class="ic">«»</div><h4>Cale a "vozinha"</h4><p>Aprenda a reduzir a subvocalização — o hábito que mais trava sua velocidade sem você perceber.</p></div>
+      <div class="lcard"><div class="ic">◎</div><h4>Amplie o campo de visão</h4><p>Treine os olhos para captar blocos de palavras de uma vez, em vez de uma de cada vez.</p></div>
+      <div class="lcard"><div class="ic">★</div><h4>Retenha o que lê</h4><p>Técnicas de memorização por imagem e associação para lembrar do conteúdo, não só passar o olho.</p></div>
+      <div class="lcard"><div class="ic">5</div><h4>5 apps + exercícios</h4><p>Aplicativos e treinos guiados para você praticar todo dia, em 5 minutos, onde estiver.</p></div>
+      <div class="lcard"><div class="ic">↗</div><h4>Meça a evolução</h4><p>Testes de PPM no início e no fim para você ver, em número, o quanto cresceu.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROFESSOR -->
+<section class="dark">
+  <div class="wrap">
+    <div class="eyebrow">Quem te ensina</div>
+    <div class="prof">
+      <div class="photo"><img src="davis-profile.jpg" alt="Davis Tomé" onerror="this.parentNode.innerHTML='Davis Tomé'"></div>
+      <div>
+        <h3 style="margin-bottom:18px">Davis Tomé</h3>
+        <p>Eu não cheguei à leitura dinâmica como acadêmico — cheguei como apaixonado por conhecimento que se cansou de ler devagar. Estudo neurociência, história, idiomas, e percebi que minhas "entradas" de informação eram lentas demais para tudo que eu queria aprender.</p>
+        <p>Fui atrás das técnicas, testei na pele, e hoje leio um livro por semana. Já ensinei esse método a milhares de pessoas — presencialmente e online: concurseiros, estudantes, médicos, advogados. Agora é a sua vez.</p>
+        <div class="sig">Davis Tomé<span>Professor · Leitura Dinâmica Prática</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Quem já fez</div>
+    <h2>Histórias de quem destravou.</h2>
+    <p class="lead">Avaliações reais de alunos do curso.</p>
+    <div class="tgrid">
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Eu geralmente não faço comentários. Esse curso, para mim, foi um dos melhores que fiz. Ensinamento claro e focado, sem blablablabla, é direto ao ponto. Eu fiz em 2 dias o curso, porque o conteúdo é prazeroso de ouvir e aprender.</p><div class="who"><div class="av">EL</div><div><div class="nm">Everton Bueno Lima</div><div class="rl">Aluno</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Superou minhas expectativas. Muito interessante esse aconselhamento sobre o tempo. Realmente ele é super importante. Já perdi muito na minha vida e agora quero aproveitar cada instante para me desenvolver.</p><div class="who"><div class="av">VO</div><div><div class="nm">Valdeque Santos de Oliveira</div><div class="rl">Aluno</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Sensacional o treinamento, você aprende a teoria e a prática é com você! O app ReaderPro já tem para iOS.</p><div class="who"><div class="av">DS</div><div><div class="nm">Daiany Roberta da Silva</div><div class="rl">Aluna</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Sim. O professor explica de maneira muito clara, com extrema seriedade, e os aplicativos indicados para aprimorar o conhecimento são bons também. Muito obrigado, professor.</p><div class="who"><div class="av">FB</div><div><div class="nm">Francisco Bolda</div><div class="rl">Aluno</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Estou gostando muito do curso, fácil de compreensão, e o aplicativo ajuda muito. O professor vai direto ao ponto.</p><div class="who"><div class="av">EA</div><div><div class="nm">Edvan Alve</div><div class="rl">Aluno</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Curso excelente! Prático e muito objetivo. Super recomendo!</p><div class="who"><div class="av">JM</div><div><div class="nm">Jaqueline Moura</div><div class="rl">Aluna</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Ameiiiii! Recomendo muito! Didática ótima, curso de excelência.</p><div class="who"><div class="av">GJ</div><div><div class="nm">Gabrielle Carvalhal Jacques</div><div class="rl">Aluna</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Ótimo curso! Direto ao ponto e com exercícios muito práticos!</p><div class="who"><div class="av">RM</div><div><div class="nm">Roger Margutti</div><div class="rl">Aluno</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Muito interessante o curso! Prático! Agora é treinar para aprimorar as técnicas!</p><div class="who"><div class="av">TM</div><div><div class="nm">Thais Mansano</div><div class="rl">Aluna</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><p class="quote">Muito bom o curso, recomendo!</p><div class="who"><div class="av">AC</div><div><div class="nm">Alisson Aparecido dos Santos Costa</div><div class="rl">Aluno</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS BAND -->
+<section class="dark" style="padding:64px 0">
+  <div class="wrap">
+    <div class="band">
+      <div><div class="rate-stars"><b>★★★★</b><span class="half">★</span></div><div class="n" style="font-size:clamp(36px,6vw,56px)">4,4</div><div class="l">média das avaliações</div></div>
+      <div><div class="n">+1.800</div><div class="l">alunos</div></div>
+      <div><div class="n">7 dias</div><div class="l">de garantia</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER -->
+<section id="oferta">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">A oferta</div>
+    <h2 style="text-align:center">Tudo que você precisa<br>para ler o dobro.</h2>
+    <div class="offer">
+      <div class="ribbon">Curso completo + bônus</div>
+      <ul class="stack">
+        <li><span class="ck">✓</span> Curso completo em vídeo, com acesso <b>vitalício</b></li>
+        <li><span class="ck">✓</span> Todas as técnicas de leitura dinâmica e campo de visão</li>
+        <li><span class="ck">✓</span> <b>Bônus:</b> 5 apps + exercícios guiados para treinar todo dia</li>
+        <li><span class="ck">✓</span> Técnicas de memorização para reter o que você lê</li>
+        <li><span class="ck">✓</span> Materiais para download e planilha de PPM</li>
+        <li><span class="ck">✓</span> Garantia incondicional de 7 dias</li>
+      </ul>
+      <div class="price-block">
+        <div class="from"><s>De R$137,90</s> por apenas</div>
+        <div class="big">R$87<small>,00</small></div>
+        <div class="inst">ou 6× de R$12,32</div>
+      </div>
+      <div style="text-align:center"><a href="https://pay.hotmart.com/A54544566L" class="btn" style="font-size:17px;padding:19px 38px">Quero aprender agora <span class="arrow">→</span></a></div>
+      <div class="guarantee">🔒 Compra segura via Hotmart · Se não gostar, você tem 7 dias para pedir reembolso, sem perguntas.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">Dúvidas frequentes</div>
+    <div class="faq">
+      <details><summary>O que exatamente eu vou aprender?</summary><p>Técnicas para aumentar a velocidade da sua leitura (a chamada leitura dinâmica ou leitura rápida), exercícios práticos com 5 aplicativos, ampliação do campo de visão e dicas de memorização para reter o que você lê.</p></details>
+      <details><summary>Como o conteúdo é entregue?</summary><p>Tudo online, por vídeo-aulas, materiais para download e aplicativos para os exercícios. Você acessa quando e quantas vezes quiser, 24h por dia, no seu ritmo.</p></details>
+      <details><summary>Funciona no iPhone (iOS)?</summary><p>Sim. A maior parte dos exercícios funciona em qualquer celular ou pelo navegador. Para os poucos apps que são só de Android, o curso traz alternativas equivalentes e materiais próprios para você fazer o mesmo treino no iOS.</p></details>
+      <details><summary>Por quanto tempo tenho acesso?</summary><p>O acesso é vitalício. Comprou uma vez, é seu para sempre — inclusive atualizações.</p></details>
+      <details><summary>E se eu não gostar?</summary><p>Você tem 7 dias de garantia incondicional. Se achar que não é para você, é só pedir o reembolso dentro desse prazo e devolvemos 100% do valor.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="dark final">
+  <div class="wrap narrow">
+    <div class="eyebrow" style="justify-content:center">Sua vez</div>
+    <h2>Quanto tempo você perde<br>lendo no <em>ritmo de sempre?</em></h2>
+    <p>A leitura é a sua porta de entrada para tudo que você quer aprender. Quanto mais rápido você lê, mais você cresce — e mais tempo você recupera.</p>
+    <blockquote style="font-family:var(--display);font-weight:600;font-size:clamp(19px,3vw,25px);color:#fff;max-width:30ch;margin:0 auto 34px;line-height:1.4">"Já perdi muito na minha vida e agora quero aproveitar cada instante para me desenvolver."<span style="display:block;font-family:var(--mono);font-weight:400;font-size:13px;color:var(--gold-soft);letter-spacing:.08em;margin-top:14px">— Valdeque, aluno</span></blockquote>
+    <a href="https://pay.hotmart.com/A54544566L" class="btn" style="font-size:17px;padding:19px 38px">Começar agora — R$87 <span class="arrow">→</span></a>
+    <div class="price"><b>R$87,00</b> &nbsp;·&nbsp; 6× de R$12,32 &nbsp;·&nbsp; acesso vitalício &nbsp;·&nbsp; garantia de 7 dias</div>
+  </div>
+</section>
+
+<footer>Leitura Dinâmica Prática · © Davis Tomé · todos os direitos reservados</footer>
+
+<script>
+/* ===== PPM TEST ===== */
+const readerEl=document.getElementById('reader');
+const timerEl=document.getElementById('timer');
+const startBtn=document.getElementById('startBtn');
+const stopBtn=document.getElementById('stopBtn');
+const resultEl=document.getElementById('result');
+const quizEl=document.getElementById('quiz');
+const captureEl=document.getElementById('capture');
+const wordCount=readerEl.innerText.replace('A princesa e o sapo','').trim().split(/\s+/).filter(w=>/[a-zà-ú0-9]/i.test(w)).length;
+let t0=0,raf=null;
+function fmt(ms){const s=ms/1000;const m=Math.floor(s/60);const sec=Math.floor(s%60);const d=Math.floor((ms%1000)/100);return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}<span class="ms">.${d}</span>`;}
+function tick(){timerEl.innerHTML=fmt(performance.now()-t0);raf=requestAnimationFrame(tick);}
+startBtn.addEventListener('click',()=>{readerEl.classList.add('show');startBtn.style.display='none';stopBtn.style.display='inline-flex';t0=performance.now();tick();setTimeout(()=>readerEl.scrollIntoView({behavior:'smooth',block:'center'}),120);});
+stopBtn.addEventListener('click',()=>{
+  cancelAnimationFrame(raf);
+  const min=(performance.now()-t0)/60000;
+  const ppm=Math.max(40,Math.round(wordCount/min));
+  stopBtn.style.display='none';
+  readerEl.classList.remove('show');
+  showResult(ppm);
+});
+function showResult(ppm){
+  resultEl.classList.add('show');
+  document.getElementById('wordInfo').textContent=`palavras por minuto · ${wordCount} palavras lidas`;
+  const numEl=document.getElementById('ppmNum');let cur=0;const step=Math.max(1,Math.round(ppm/45));
+  const ci=setInterval(()=>{cur+=step;if(cur>=ppm){cur=ppm;clearInterval(ci);}numEl.firstChild.textContent=cur;},22);
+  const pct=Math.min(100,Math.round((ppm/450)*100));setTimeout(()=>document.getElementById('gaugeFill').style.width=pct+'%',200);
+  let v,s;
+  if(ppm<150){v="Você lê no ritmo da escola.";s="É o ponto de partida da maioria — e o perfil que mais evolui. Com os exercícios certos, dobrar para 300 é realista em poucas semanas.";}
+  else if(ppm<250){v="Acima da média, com teto alto.";s="Você já lê melhor que a maior parte das pessoas. Treinando campo de visão e cortando a subvocalização, 350 a 400 estão ao seu alcance.";}
+  else if(ppm<400){v="Leitor rápido. Falta lapidar.";s="Você está no grupo dos rápidos. O próximo nível é garantir que a retenção acompanhe a velocidade — é aí que o método faz diferença.";}
+  else{v="Velocidade de leitor treinado.";s="Impressionante. Agora o jogo é retenção e constância: ler rápido e lembrar de tudo. Confira sua absorção abaixo.";}
+  document.getElementById('verdict').textContent=v;document.getElementById('verdictSub').textContent=s;
+  const ct=document.getElementById('captureTitle');
+  if(ppm<280){ct.innerHTML=`Você lê <em>${ppm}</em> ppm. Quer chegar a <em>${ppm*2}</em>?`;}
+  else{ct.innerHTML=`Você já lê rápido (<em>${ppm}</em> ppm). Quer ler rápido <em>e lembrar de tudo?</em>`;}
+  setTimeout(()=>captureEl.classList.add('show'),350);
+  setTimeout(()=>quizEl.classList.add('show'),800);
+  setTimeout(()=>resultEl.scrollIntoView({behavior:'smooth',block:'start'}),250);
+}
+document.querySelectorAll('#quiz .q').forEach(q=>{
+  const answer=q.dataset.answer;
+  q.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      q.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+      if(opt.textContent.trim().toLowerCase()===answer)opt.classList.add('right');
+      else{opt.classList.add('wrong');q.querySelectorAll('.opt').forEach(o=>{if(o.textContent.trim().toLowerCase()===answer)o.classList.add('right');});}
+    });
+  });
+});
+document.getElementById('emailBtn').addEventListener('click',()=>{
+  const v=document.getElementById('emailInput').value.trim();
+  if(!/.+@.+\..+/.test(v)){document.getElementById('emailInput').focus();return;}
+  document.getElementById('emailOk').classList.add('show');   // aqui dispara o envio dos exercícios pro e-mail/Hotmart na versão real
+});
+
+/* ===== 13ms FLASH ===== */
+const scenes=[
+  {name:'casa',svg:`<svg viewBox="0 0 100 100"><rect x="22" y="45" width="56" height="40" fill="#c0392b"/><polygon points="18,45 50,18 82,45" fill="#7a2e22"/><rect x="42" y="60" width="16" height="25" fill="#3d2b1f"/><rect x="28" y="52" width="11" height="11" fill="#f1c40f"/><circle cx="78" cy="20" r="9" fill="#f39c12"/></svg>`},
+  {name:'barco',svg:`<svg viewBox="0 0 100 100"><rect y="62" width="100" height="38" fill="#2980b9"/><polygon points="50,20 50,60 22,60" fill="#ecf0f1"/><polygon points="54,28 54,60 76,60" fill="#bdc3c7"/><rect x="49" y="20" width="2.5" height="42" fill="#5d4037"/><circle cx="20" cy="22" r="3" fill="#34495e"/><circle cx="30" cy="18" r="3" fill="#34495e"/></svg>`},
+  {name:'gato',svg:`<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="28" fill="#e67e22"/><polygon points="30,35 26,12 44,28" fill="#e67e22"/><polygon points="70,35 74,12 56,28" fill="#e67e22"/><circle cx="40" cy="52" r="4" fill="#2c3e50"/><circle cx="60" cy="52" r="4" fill="#2c3e50"/><polygon points="46,60 54,60 50,66" fill="#c0392b"/></svg>`},
+  {name:'xícara',svg:`<svg viewBox="0 0 100 100"><rect x="28" y="42" width="40" height="34" rx="5" fill="#ecf0f1"/><path d="M68 50 q16 0 16 12 t-16 12" fill="none" stroke="#ecf0f1" stroke-width="6"/><rect x="26" y="76" width="50" height="7" rx="3" fill="#bdc3c7"/><path d="M40 30 q4 -8 0 -14 M52 30 q4 -8 0 -14" stroke="#95a5a6" stroke-width="3" fill="none"/></svg>`},
+  {name:'árvore',svg:`<svg viewBox="0 0 100 100"><rect x="45" y="55" width="10" height="35" fill="#6e4a2b"/><circle cx="50" cy="42" r="26" fill="#27ae60"/><circle cx="34" cy="50" r="16" fill="#229954"/><circle cx="66" cy="50" r="16" fill="#229954"/></svg>`},
+  {name:'estrela',svg:`<svg viewBox="0 0 100 100"><polygon points="50,12 61,40 92,40 67,59 76,89 50,70 24,89 33,59 8,40 39,40" fill="#f1c40f"/></svg>`},
+];
+let flashMs=600;
+document.querySelectorAll('#durRow .chip').forEach(c=>{c.addEventListener('click',()=>{document.querySelectorAll('#durRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');flashMs=+c.dataset.ms;});});
+const flashBtn=document.getElementById('flashBtn'),flashbox=document.getElementById('flashbox'),countdown=document.getElementById('countdown'),stageIdle=document.getElementById('stageIdle'),flashQ=document.getElementById('flashQ');
+flashBtn.addEventListener('click',()=>{
+  flashBtn.disabled=true;flashBtn.style.opacity=.5;flashQ.classList.remove('show');stageIdle.style.display='none';countdown.style.display='block';
+  let n=3;countdown.textContent=n;
+  const cd=setInterval(()=>{n--;if(n>0){countdown.textContent=n;}else{clearInterval(cd);countdown.style.display='none';doFlash();}},650);
+});
+function doFlash(){
+  const scene=scenes[Math.floor(Math.random()*scenes.length)];
+  flashbox.innerHTML=scene.svg;flashbox.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{setTimeout(()=>{flashbox.style.display='none';flashbox.innerHTML='';askFlash(scene.name);},flashMs);}));
+}
+function askFlash(correct){
+  const distract=scenes.map(s=>s.name).filter(n=>n!==correct).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[correct,...distract].sort(()=>Math.random()-.5);
+  const box=document.getElementById('flashOpts');box.innerHTML='';
+  opts.forEach(name=>{
+    const el=document.createElement('span');el.className='opt';el.textContent=name;
+    el.addEventListener('click',()=>{
+      box.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+      if(name===correct)el.classList.add('right');
+      else{el.classList.add('wrong');box.querySelectorAll('.opt').forEach(o=>{if(o.textContent===correct)o.classList.add('right');});}
+      stageIdle.innerHTML='Viu? Mesmo num piscar, seu cérebro registrou.<br>É essa capacidade que a leitura dinâmica treina.';stageIdle.style.display='block';
+      flashBtn.disabled=false;flashBtn.style.opacity=1;flashBtn.innerHTML='Piscar de novo <span class="arrow">→</span>';
+    });
+    box.appendChild(el);
+  });
+  flashQ.classList.add('show');
+}
+
+/* ===== RSVP ===== */
+const rsvpWordEl=document.getElementById('rsvpWord'),rsvpBtn=document.getElementById('rsvpBtn'),rsvpStop=document.getElementById('rsvpStop');
+let rsvpWpm=300,rsvpActive=false,rsvpPaused=false,rsvpIndex=0,rsvpTimer=null;
+document.querySelectorAll('#speedRow .chip').forEach(c=>{c.addEventListener('click',()=>{document.querySelectorAll('#speedRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');rsvpWpm=+c.dataset.wpm;});});
+const rsvpText="A princesa e o sapo. "+readerEl.innerText.replace('A princesa e o sapo','');
+const rsvpWords=rsvpText.trim().split(/\s+/);
+function rsvpStep(){
+  if(!rsvpActive||rsvpPaused)return;
+  if(rsvpIndex>=rsvpWords.length){rsvpFinish();return;}
+  const w=rsvpWords[rsvpIndex];rsvpWordEl.textContent=w;rsvpIndex++;
+  const delay=60000/rsvpWpm;const extra=/[.,:;!?—]$/.test(w)?delay*0.9:0;
+  rsvpTimer=setTimeout(rsvpStep,delay+extra);
+}
+function rsvpFinish(){rsvpActive=false;rsvpPaused=false;rsvpWordEl.textContent='✓ fim';rsvpBtn.innerHTML='Ler de novo <span class="arrow">→</span>';rsvpStop.style.display='none';}
+function rsvpReset(){clearTimeout(rsvpTimer);rsvpActive=false;rsvpPaused=false;rsvpIndex=0;rsvpWordEl.textContent='pronto?';rsvpBtn.innerHTML='Iniciar leitura guiada <span class="arrow">→</span>';rsvpStop.style.display='none';}
+rsvpBtn.addEventListener('click',()=>{
+  if(!rsvpActive){rsvpIndex=0;rsvpActive=true;rsvpPaused=false;rsvpBtn.innerHTML='Pausar';rsvpStop.style.display='inline-flex';rsvpStep();}
+  else if(!rsvpPaused){rsvpPaused=true;clearTimeout(rsvpTimer);rsvpBtn.innerHTML='Retomar <span class="arrow">→</span>';}
+  else{rsvpPaused=false;rsvpBtn.innerHTML='Pausar';rsvpStep();}
+});
+rsvpStop.addEventListener('click',rsvpReset);
+</script>
+</body>
+</html>
