@@ -57,8 +57,8 @@
   .btn.navy:hover{background:var(--navy-2);box-shadow:0 12px 28px -14px rgba(26,26,85,.7)}
   .btn.ghost{background:transparent;color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
   .btn.ghost:hover{background:var(--navy);color:#fff}
-  .dark .btn.ghost{color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
-  .dark .btn.ghost:hover{background:#fff;color:var(--navy)}
+  .dark .btn.ghost,.hero .btn.ghost{color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+  .dark .btn.ghost:hover,.hero .btn.ghost:hover{background:#fff;color:var(--navy)}
   .arrow{transition:transform .24s}.btn:hover .arrow{transform:translateX(4px)}
 
   /* topbar */
@@ -74,7 +74,9 @@
   .hero::before{content:"";position:absolute;top:-10%;right:-5%;width:60%;height:120%;background:linear-gradient(135deg,var(--facet),transparent 55%);opacity:.5;transform:skewX(-12deg);pointer-events:none}
   .hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:34%;background:linear-gradient(180deg,transparent,var(--navy-deep));pointer-events:none}
   .hero .wrap{position:relative;z-index:2}
-  .hero h1{font-size:clamp(42px,8vw,86px);font-weight:900;margin:16px 0 26px;letter-spacing:-.03em}
+  .hero h1{font-size:clamp(42px,6vw,58px);font-weight:900;margin:16px 0 26px;letter-spacing:-.03em}
+  .br-m{display:none}
+  @media(max-width:600px){.br-m{display:inline}}
   .hero h1 em{font-style:normal;color:var(--gold)}
   .hero .lead{color:#c8cbeb;margin-bottom:14px}
   .hero .sub{font-size:16px;color:#9698c4;max-width:56ch;margin-bottom:38px}
@@ -236,7 +238,7 @@
 <header class="hero">
   <div class="wrap narrow">
     <div class="eyebrow reveal d1">O experimento de 2 minutos</div>
-    <h1 class="reveal d2">Quantas palavras<br>por minuto<br><em>você lê?</em></h1>
+    <h1 class="reveal d2">Quantas palavras<br>por minuto<br class="br-m"> <em>você lê?</em></h1>
     <p class="lead reveal d3">Faça o teste abaixo com um conto curto e descubra o seu número real — leva 2 minutos.</p>
     <p class="sub reveal d4">A maioria lê entre 120 e 180, o ritmo que aprendeu na escola. Não é falta de inteligência: é falta de técnica. E dá pra dobrar em cerca de um mês.</p>
     <div class="hero-cta reveal d5">
@@ -273,6 +275,7 @@
         <p class="title">A princesa e o sapo</p>
         <p>Era uma vez uma princesa que vivia em um reino muito distante. Ela passava as tardes brincando com sua bola de ouro nos jardins do castelo. Um dia a bola caiu dentro do lago e a princesa ficou muito triste. Nessa hora, surgiu um sapo que lhe perguntou o porquê de tamanha tristeza. Sabendo do ocorrido, o sapo então prometeu resgatar a bola da jovem, mas havia uma condição: que ela lhe desse um beijo. A princesa concordou, pois queria muito a bola. Entretanto, assim que teve o objeto em suas mãos, ela correu para o castelo sem ao menos agradecer. O sapo ficou muito frustrado e gritou:</p>
         <p>— Mas princesa, você me prometeu! A partir daí, o sapinho passou a acompanhar a princesa em todos os lugares, exigindo sua recompensa. Um dia, cansado, o sapo foi até o rei e disse: — A princesa me prometeu um beijo, pois resgatei sua bola de ouro. Mas ela não quer cumprir sua promessa. O rei chamou a filha e lhe disse que uma promessa real deve sempre ser cumprida. Assim, a princesa tomou coragem e, finalmente, beijou o sapo. Para sua surpresa, o sapo asqueroso se transformou em um lindo príncipe e os dois se apaixonaram, vivendo felizes para sempre.</p>
+        <button class="btn" id="stopBtnBottom" style="margin-top:6px">Terminei de ler <span class="arrow">→</span></button>
       </div>
       <div class="result" id="result">
         <div class="ppm-big" id="ppmNum">0<small id="wordInfo">palavras por minuto</small></div>
@@ -280,6 +283,7 @@
         <div class="gauge-labels"><span>100</span><span>200</span><span>300</span><span>400+</span></div>
         <div class="verdict" id="verdict"></div>
         <p class="verdict-sub" id="verdictSub"></p>
+        <button class="btn ghost" id="redoBtn" style="margin-top:22px">↺ Refazer o teste</button>
       </div>
       <div class="capture" id="capture">
         <h3 id="captureTitle">Bora dobrar esse número?</h3>
@@ -480,19 +484,23 @@ let t0=0,raf=null;
 function fmt(ms){const s=ms/1000;const m=Math.floor(s/60);const sec=Math.floor(s%60);const d=Math.floor((ms%1000)/100);return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}<span class="ms">.${d}</span>`;}
 function tick(){timerEl.innerHTML=fmt(performance.now()-t0);raf=requestAnimationFrame(tick);}
 startBtn.addEventListener('click',()=>{readerEl.classList.add('show');startBtn.style.display='none';stopBtn.style.display='inline-flex';t0=performance.now();tick();setTimeout(()=>readerEl.scrollIntoView({behavior:'smooth',block:'center'}),120);});
-stopBtn.addEventListener('click',()=>{
+function finishReading(){
   cancelAnimationFrame(raf);
   const min=(performance.now()-t0)/60000;
   const ppm=Math.max(40,Math.round(wordCount/min));
   stopBtn.style.display='none';
   readerEl.classList.remove('show');
   showResult(ppm);
-});
+}
+stopBtn.addEventListener('click',finishReading);
+document.getElementById('stopBtnBottom').addEventListener('click',finishReading);
+let countTimer=null;
 function showResult(ppm){
   resultEl.classList.add('show');
   document.getElementById('wordInfo').textContent=`palavras por minuto · ${wordCount} palavras lidas`;
   const numEl=document.getElementById('ppmNum');let cur=0;const step=Math.max(1,Math.round(ppm/45));
-  const ci=setInterval(()=>{cur+=step;if(cur>=ppm){cur=ppm;clearInterval(ci);}numEl.firstChild.textContent=cur;},22);
+  clearInterval(countTimer);
+  countTimer=setInterval(()=>{cur+=step;if(cur>=ppm){cur=ppm;clearInterval(countTimer);}numEl.firstChild.textContent=cur;},22);
   const pct=Math.min(100,Math.round((ppm/450)*100));setTimeout(()=>document.getElementById('gaugeFill').style.width=pct+'%',200);
   let v,s;
   if(ppm<150){v="Você lê no ritmo da escola.";s="É o ponto de partida da maioria — e o perfil que mais evolui. Com os exercícios certos, dobrar para 300 é realista em poucas semanas.";}
@@ -522,6 +530,20 @@ document.getElementById('emailBtn').addEventListener('click',()=>{
   if(!/.+@.+\..+/.test(v)){document.getElementById('emailInput').focus();return;}
   document.getElementById('emailOk').classList.add('show');   // aqui dispara o envio dos exercícios pro e-mail/Hotmart na versão real
 });
+function resetTest(){
+  cancelAnimationFrame(raf);clearInterval(countTimer);
+  timerEl.innerHTML='00:00<span class="ms">.0</span>';
+  startBtn.style.display='inline-flex';stopBtn.style.display='none';
+  readerEl.classList.remove('show');
+  resultEl.classList.remove('show');captureEl.classList.remove('show');quizEl.classList.remove('show');
+  document.getElementById('gaugeFill').style.width='0';
+  document.getElementById('ppmNum').firstChild.textContent='0';
+  document.getElementById('emailOk').classList.remove('show');
+  document.getElementById('emailInput').value='';
+  document.querySelectorAll('#quiz .opt').forEach(o=>o.classList.remove('right','wrong','disabled'));
+  document.getElementById('teste').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('redoBtn').addEventListener('click',resetTest);
 
 /* ===== 13ms FLASH ===== */
 const scenes=[
