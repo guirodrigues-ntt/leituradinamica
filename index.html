@@ -479,11 +479,12 @@ const stopBtn=document.getElementById('stopBtn');
 const resultEl=document.getElementById('result');
 const quizEl=document.getElementById('quiz');
 const captureEl=document.getElementById('capture');
-const wordCount=readerEl.innerText.replace('A princesa e o sapo','').trim().split(/\s+/).filter(w=>/[a-zà-ú0-9]/i.test(w)).length;
+const storyText=[...readerEl.querySelectorAll('p:not(.title)')].map(p=>p.textContent).join(' ').replace(/\s+/g,' ').trim();
+const wordCount=storyText.split(/\s+/).filter(w=>/[a-zà-ú0-9]/i.test(w)).length;
 let t0=0,raf=null;
 function fmt(ms){const s=ms/1000;const m=Math.floor(s/60);const sec=Math.floor(s%60);const d=Math.floor((ms%1000)/100);return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}<span class="ms">.${d}</span>`;}
 function tick(){timerEl.innerHTML=fmt(performance.now()-t0);raf=requestAnimationFrame(tick);}
-startBtn.addEventListener('click',()=>{readerEl.classList.add('show');startBtn.style.display='none';stopBtn.style.display='inline-flex';t0=performance.now();tick();setTimeout(()=>readerEl.scrollIntoView({behavior:'smooth',block:'center'}),120);});
+startBtn.addEventListener('click',()=>{readerEl.classList.add('show');startBtn.style.display='none';stopBtn.style.display='inline-flex';t0=performance.now();tick();});
 function finishReading(){
   cancelAnimationFrame(raf);
   const min=(performance.now()-t0)/60000;
@@ -589,7 +590,7 @@ function askFlash(correct){
 const rsvpWordEl=document.getElementById('rsvpWord'),rsvpBtn=document.getElementById('rsvpBtn'),rsvpStop=document.getElementById('rsvpStop');
 let rsvpWpm=300,rsvpActive=false,rsvpPaused=false,rsvpIndex=0,rsvpTimer=null;
 document.querySelectorAll('#speedRow .chip').forEach(c=>{c.addEventListener('click',()=>{document.querySelectorAll('#speedRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');rsvpWpm=+c.dataset.wpm;});});
-const rsvpText="A princesa e o sapo. "+readerEl.innerText.replace('A princesa e o sapo','');
+const rsvpText="A princesa e o sapo. "+storyText;
 const rsvpWords=rsvpText.trim().split(/\s+/);
 function rsvpStep(){
   if(!rsvpActive||rsvpPaused)return;
