@@ -104,6 +104,21 @@
   .reader.show{max-height:none;opacity:1;border-left:3px solid var(--gold);padding-left:22px;margin:26px 0 30px}
   .reader p{margin-bottom:14px}
   .reader .title{font-family:var(--display);font-weight:800;font-size:24px;color:var(--navy);margin-bottom:16px}
+  /* preview (conto escolhido, antes de iniciar) */
+  .preview{display:none;margin:26px 0 8px;border-left:3px solid var(--gold);padding-left:22px;animation:rise .45s ease forwards}
+  .preview .title{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,26px);color:var(--navy);margin-bottom:10px}
+  .preview .teaser{font-size:clamp(16px,2vw,18px);color:var(--ink-soft);line-height:1.6;max-width:55ch;margin-bottom:12px}
+  .preview .meta{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-faint)}
+  /* seletor de contos */
+  .chooser{display:none;margin:26px 0 8px;animation:rise .45s ease forwards}
+  .chooser .hint{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:14px}
+  .story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .story-pick{text-align:left;cursor:pointer;background:var(--white);border:none;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:6px;padding:18px;transition:.2s;font-family:var(--body)}
+  .story-pick:hover{box-shadow:inset 0 0 0 1.5px var(--navy);transform:translateY(-2px)}
+  .story-pick.on{box-shadow:inset 0 0 0 2px var(--gold);background:var(--paper)}
+  .story-pick .sp-title{display:block;font-family:var(--display);font-weight:800;font-size:18px;color:var(--navy);margin-bottom:6px}
+  .story-pick .sp-teaser{display:block;font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .story-pick .sp-badge{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep)}
   .result{display:none}.result.show{display:block;animation:rise .6s ease forwards}
   .ppm-big{font-family:var(--display);font-weight:900;font-size:clamp(70px,16vw,138px);line-height:.9;color:var(--gold)}
   .ppm-big small{font-family:var(--mono);font-size:15px;letter-spacing:.08em;color:var(--ink-faint);display:block;font-weight:400;margin-top:8px}
@@ -142,6 +157,16 @@
   .light-chips .chip:hover{box-shadow:inset 0 0 0 1.5px var(--navy)}
   .light-chips .chip.on{background:var(--gold);color:var(--navy-deep);box-shadow:none}
   .flash-q{display:none;margin-top:20px}.flash-q.show{display:block;animation:rise .5s ease forwards}
+  .stage .flashbox img{width:100%;height:100%;object-fit:cover}
+  .img-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
+  .img-opt{cursor:pointer;border:none;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px var(--line-d);border-radius:6px;padding:8px;transition:.2s;text-align:center;font-family:var(--body)}
+  .img-opt img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:4px;display:block;margin-bottom:8px;filter:grayscale(.2) brightness(.92)}
+  .img-opt span{font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;color:#c8cbeb}
+  .img-opt:hover{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4);transform:translateY(-2px)}
+  .img-opt.seen{box-shadow:inset 0 0 0 2px var(--gold)}
+  .img-opt.seen img{filter:none}
+  .img-opt.seen span{color:var(--gold-soft)}
+  .img-opt.disabled{pointer-events:none}
   .dark .opt{background:rgba(255,255,255,.05);color:#eef0ff;box-shadow:inset 0 0 0 1.5px var(--line-d)}
   .dark .q .qt{color:#fff}
 
@@ -227,7 +252,7 @@
 <div class="topbar">
   <div class="wrap">
     <div class="brand">
-      <img src="Logo-LDP.webp" alt="Leitura Dinâmica Prática" onerror="this.style.display='none'">
+      <img src="img/Logo-LDP.webp" alt="Leitura Dinâmica Prática" onerror="this.style.display='none'">
       <div class="bn">Leitura Dinâmica<br>Prática</div>
     </div>
     <a href="#oferta" class="btn">Quero o curso</a>
@@ -257,24 +282,37 @@
 <section id="teste">
   <div class="wrap narrow">
     <div class="eyebrow">Experimento 01 — Velocidade</div>
-    <h2>Leia o conto. Sem pressa, sem trapaça.</h2>
-    <p class="lead">Ao clicar em começar, o texto aparece e o cronômetro dispara junto. Leia no seu ritmo natural. Ao terminar, pare o relógio — e não minta pra você mesmo.</p>
+    <h2>Escolha um conto e leia. Sem pressa, sem trapaça.</h2>
+    <p class="lead">Já leu <em>A princesa e o sapo</em> no YouTube? Sem problema — você pode escolher outro conto. Ao começar a ler, o texto aparece e o cronômetro dispara junto. Leia no seu ritmo natural e, ao terminar, pare o relógio — sem mentir pra você mesmo.</p>
 
     <div class="card" style="margin-top:34px">
       <div class="test-head">
         <div>
-          <div class="timer" id="timer">00:00<span class="ms">.0</span></div>
+          <div class="timer" id="timer" style="display:none">00:00<span class="ms">.0</span></div>
           <div class="controls">
-            <button class="btn" id="startBtn">Começar a ler <span class="arrow">→</span></button>
+            <button class="btn" id="seeStoriesBtn">Ver os contos <span class="arrow">→</span></button>
+            <button class="btn" id="startBtn" style="display:none">Começar a ler <span class="arrow">→</span></button>
+            <button class="btn ghost" id="chooseBtn" style="display:none">Escolher outra história</button>
             <button class="btn ghost" id="stopBtn" style="display:none">Terminei de ler</button>
           </div>
         </div>
-        <img class="castle" src="castle.webp" alt="O castelo do conto" onerror="this.style.display='none'">
+        <img class="castle" id="storyImg" src="img/castle.webp" alt="Ilustração do conto" onerror="this.style.display='none'">
       </div>
+      <!-- conto escolhido (antes de iniciar a contagem) -->
+      <div class="preview" id="preview">
+        <p class="title" id="previewTitle"></p>
+        <p class="teaser" id="previewTeaser"></p>
+        <p class="meta" id="previewMeta"></p>
+      </div>
+      <!-- seletor de contos -->
+      <div class="chooser" id="chooser">
+        <p class="hint">Escolha o conto que quer ler:</p>
+        <div class="story-grid" id="storyGrid"></div>
+      </div>
+      <!-- leitura (cronômetro rodando) -->
       <div class="reader" id="reader">
-        <p class="title">A princesa e o sapo</p>
-        <p>Era uma vez uma princesa que vivia em um reino muito distante. Ela passava as tardes brincando com sua bola de ouro nos jardins do castelo. Um dia a bola caiu dentro do lago e a princesa ficou muito triste. Nessa hora, surgiu um sapo que lhe perguntou o porquê de tamanha tristeza. Sabendo do ocorrido, o sapo então prometeu resgatar a bola da jovem, mas havia uma condição: que ela lhe desse um beijo. A princesa concordou, pois queria muito a bola. Entretanto, assim que teve o objeto em suas mãos, ela correu para o castelo sem ao menos agradecer. O sapo ficou muito frustrado e gritou:</p>
-        <p>— Mas princesa, você me prometeu! A partir daí, o sapinho passou a acompanhar a princesa em todos os lugares, exigindo sua recompensa. Um dia, cansado, o sapo foi até o rei e disse: — A princesa me prometeu um beijo, pois resgatei sua bola de ouro. Mas ela não quer cumprir sua promessa. O rei chamou a filha e lhe disse que uma promessa real deve sempre ser cumprida. Assim, a princesa tomou coragem e, finalmente, beijou o sapo. Para sua surpresa, o sapo asqueroso se transformou em um lindo príncipe e os dois se apaixonaram, vivendo felizes para sempre.</p>
+        <p class="title" id="readerTitle"></p>
+        <div id="readerBody"></div>
         <button class="btn" id="stopBtnBottom" style="margin-top:6px">Terminei de ler <span class="arrow">→</span></button>
       </div>
       <div class="result" id="result">
@@ -294,36 +332,34 @@
       <div class="quiz" id="quiz">
         <div class="eyebrow" style="margin-bottom:14px">Experimento 02 — Absorção (bônus)</div>
         <p class="verdict-sub" style="margin-bottom:22px">Velocidade sem retenção é só correr os olhos. Sem voltar ao texto: o que ficou?</p>
-        <div class="q" data-answer="bola de ouro"><div class="qt">Qual era o brinquedo da princesa?</div><div class="opts"><span class="opt">um espelho</span><span class="opt">bola de ouro</span><span class="opt">uma coroa</span></div></div>
-        <div class="q" data-answer="um beijo"><div class="qt">O que o sapo exigiu em troca de resgatar a bola?</div><div class="opts"><span class="opt">metade do reino</span><span class="opt">um beijo</span><span class="opt">morar no castelo</span></div></div>
-        <div class="q" data-answer="o rei"><div class="qt">Quem obrigou a princesa a cumprir a promessa?</div><div class="opts"><span class="opt">a rainha</span><span class="opt">o rei</span><span class="opt">uma fada</span></div></div>
+        <div id="quizBody"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MECHANISM 13ms -->
+<!-- MECHANISM — slideshow relâmpago -->
 <section class="dark">
   <div class="wrap narrow">
     <div class="eyebrow">Experimento 03 — Percepção</div>
     <h2>Seu cérebro é mais rápido<br>do que a sua leitura.</h2>
-    <p class="lead">Pesquisadores mostraram que o cérebro identifica uma imagem em até 13 milésimos de segundo — menos de um piscar de olhos. Então, se você capta uma imagem nesse tempo, por que ainda lê palavra por palavra?</p>
+    <p class="lead">Pesquisas mostram que o cérebro reconhece uma imagem em até 13 milésimos de segundo — menos de um piscar de olhos. Vamos provar: quatro fotos vão passar pela tela numa rajada. Depois, diga o que você viu.</p>
     <div class="card" style="margin-top:34px">
-      <p class="note" style="margin-bottom:8px">Escolha por quanto tempo a imagem vai aparecer:</p>
+      <p class="note" style="margin-bottom:8px">Escolha quanto tempo cada foto fica na tela:</p>
       <div class="dur-row" id="durRow">
-        <span class="chip on" data-ms="600">600 ms</span>
-        <span class="chip" data-ms="300">300 ms</span>
-        <span class="chip" data-ms="120">120 ms</span>
+        <span class="chip" data-ms="400">400 ms</span>
+        <span class="chip on" data-ms="200">200 ms</span>
+        <span class="chip" data-ms="100">100 ms</span>
         <span class="chip" data-ms="60">60 ms</span>
-        <span class="chip" data-ms="30">30 ms · limite da tela</span>
+        <span class="chip" data-ms="40">40 ms · no talo</span>
       </div>
       <div class="stage" id="stage">
-        <div class="idle-txt" id="stageIdle">A imagem vai piscar uma única vez.<br>Olhe fixo para o centro.</div>
+        <div class="idle-txt" id="stageIdle">Quatro fotos vão passar numa rajada.<br>Olhe fixo para o centro — sem piscar.</div>
         <div class="countdown" id="countdown" style="display:none"></div>
         <div class="flashbox" id="flashbox"></div>
       </div>
-      <button class="btn" id="flashBtn">Piscar a imagem <span class="arrow">→</span></button>
-      <div class="flash-q" id="flashQ"><div class="q" style="margin-top:8px"><div class="qt">O que apareceu na tela?</div><div class="opts" id="flashOpts"></div></div></div>
+      <button class="btn" id="flashBtn">Rodar o slideshow <span class="arrow">→</span></button>
+      <div class="flash-q" id="flashQ"><div class="q" style="margin-top:8px"><div class="qt">O que passou pela tela?</div><div class="opts img-opts" id="flashOpts"></div></div></div>
     </div>
   </div>
 </section>
@@ -333,7 +369,7 @@
   <div class="wrap narrow">
     <div class="eyebrow">Experimento 04 — Ler como imagem</div>
     <h2>Agora sinta os 400.</h2>
-    <p class="lead">A mesma história, palavra por palavra no centro da tela — sem o olho precisar caminhar pela linha. Comece devagar e acelere no meio: a 400 ppm você termina o conto em menos de um minuto.</p>
+    <p class="lead">A história que você escolheu, palavra por palavra no centro da tela — sem o olho precisar caminhar pela linha. Comece devagar e acelere no meio: a 400 ppm você termina o conto em menos de um minuto.</p>
     <div class="card" style="margin-top:34px">
       <div class="speed-row light-chips" id="speedRow">
         <span class="note" style="margin:0">Velocidade:</span>
@@ -373,7 +409,7 @@
   <div class="wrap">
     <div class="eyebrow">Quem te ensina</div>
     <div class="prof">
-      <div class="photo"><img src="davis-profile.jpg" alt="Davis Tomé" onerror="this.parentNode.innerHTML='Davis Tomé'"></div>
+      <div class="photo"><img src="img/davis-profile.jpg" alt="Davis Tomé" onerror="this.parentNode.innerHTML='Davis Tomé'"></div>
       <div>
         <h3 style="margin-bottom:18px">Davis Tomé</h3>
         <p>Eu não cheguei à leitura dinâmica como acadêmico — cheguei como apaixonado por conhecimento que se cansou de ler devagar. Estudo neurociência, história, idiomas, e percebi que minhas "entradas" de informação eram lentas demais para tudo que eu queria aprender.</p>
@@ -471,34 +507,163 @@
 <footer>Leitura Dinâmica Prática · © Davis Tomé · todos os direitos reservados</footer>
 
 <script>
-/* ===== PPM TEST ===== */
+/* ===== EXPERIMENTO 01 — VELOCIDADE (com escolha de conto) ===== */
+const STORIES=[
+  {
+    id:'princesa',
+    title:'A princesa e o sapo',
+    img:'img/castle.webp',
+    teaser:'Um conto clássico: uma bola de ouro perdida no lago, um sapo com um pedido inusitado e uma promessa real que precisa ser cumprida.',
+    paras:[
+      'Era uma vez uma princesa que vivia em um reino muito distante. Ela passava as tardes brincando com sua bola de ouro nos jardins do castelo. Um dia a bola caiu dentro do lago e a princesa ficou muito triste. Nessa hora, surgiu um sapo que lhe perguntou o porquê de tamanha tristeza. Sabendo do ocorrido, o sapo então prometeu resgatar a bola da jovem, mas havia uma condição: que ela lhe desse um beijo. A princesa concordou, pois queria muito a bola. Entretanto, assim que teve o objeto em suas mãos, ela correu para o castelo sem ao menos agradecer. O sapo ficou muito frustrado e gritou:',
+      '— Mas princesa, você me prometeu! A partir daí, o sapinho passou a acompanhar a princesa em todos os lugares, exigindo sua recompensa. Um dia, cansado, o sapo foi até o rei e disse: — A princesa me prometeu um beijo, pois resgatei sua bola de ouro. Mas ela não quer cumprir sua promessa. O rei chamou a filha e lhe disse que uma promessa real deve sempre ser cumprida. Assim, a princesa tomou coragem e, finalmente, beijou o sapo. Para sua surpresa, o sapo asqueroso se transformou em um lindo príncipe e os dois se apaixonaram, vivendo felizes para sempre.'
+    ],
+    quiz:[
+      {q:'Qual era o brinquedo da princesa?',a:'bola de ouro',opts:['um espelho','bola de ouro','uma coroa']},
+      {q:'O que o sapo exigiu em troca de resgatar a bola?',a:'um beijo',opts:['metade do reino','um beijo','morar no castelo']},
+      {q:'Quem obrigou a princesa a cumprir a promessa?',a:'o rei',opts:['a rainha','o rei','uma fada']}
+    ]
+  },
+  {
+    id:'maratona',
+    title:'O menino e a maratona',
+    img:'img/maraton.webp',
+    teaser:'A história de um garoto que ninguém achava capaz de vencer uma corrida — até ele provar o contrário, com a ajuda de uma voz na multidão.',
+    paras:[
+      'Era uma vez um menino que sonhava em ganhar uma corrida. Ele morava perto de uma floresta e treinava todas as tardes correndo entre as árvores. Um dia, soube que haveria uma grande maratona na vila e que o vencedor receberia um troféu de ouro. O menino ficou muito animado e se inscreveu na hora. Porém, havia um problema: ele era o menor e o mais magro de todos os competidores, e ninguém acreditava que ele pudesse vencer. No dia da corrida, todos largaram juntos e logo o menino ficou para trás, cansado e quase sem ar. Nessa hora, sua avó, que assistia da beira do caminho, gritou:',
+      '— Não desista! Você é mais forte do que pensa! Animado pelas palavras da avó, o menino respirou fundo e voltou a correr com todas as suas forças. Aos poucos, foi ultrapassando os outros corredores, um por um. Quando faltava pouco para o fim, ele já estava na frente de todos. Para a surpresa da vila inteira, o menino cruzou a linha de chegada em primeiro lugar e recebeu o troféu de ouro. A partir daquele dia, ninguém mais duvidou dele, e o menino viveu muito feliz, lembrando sempre que nunca devemos desistir dos nossos sonhos.'
+    ],
+    quiz:[
+      {q:'Qual era o prêmio da corrida?',a:'um troféu de ouro',opts:['uma medalha de prata','um troféu de ouro','uma bicicleta nova']},
+      {q:'Quem incentivou o menino a não desistir?',a:'a avó',opts:['o pai','a avó','o treinador']},
+      {q:'Como o menino estava no começo da corrida?',a:'para trás',opts:['na frente','para trás','no meio do pelotão']}
+    ]
+  },
+  {
+    id:'concurso',
+    title:'A jovem e o concurso',
+    img:'img/concurso.webp',
+    teaser:'Ela estudava horas sem resultado, até descobrir um jeito novo de ler e estudar que mudou completamente a sua história.',
+    paras:[
+      'Era uma vez uma jovem que sonhava em passar em um concurso público. Todos os dias ela abria seus livros e estudava por muitas horas, mas, por mais que se esforçasse, nada parecia entrar na sua cabeça. Ela lia as páginas devagar, esquecia tudo no dia seguinte e voltava a estudar o mesmo conteúdo várias vezes. Cansada e quase desistindo, a jovem conheceu um método novo, que ensinava a ler mais rápido e a guardar melhor aquilo que se lia. No começo, ela achou estranho, mas resolveu tentar.',
+      'Para sua surpresa, em poucas semanas já lia o dobro de páginas no mesmo tempo e, o melhor de tudo, lembrava de quase tudo o que estudava. Animada com os resultados, ela passou a treinar a leitura todos os dias, com calma e atenção. Chegou então o dia da prova. A jovem leu cada questão com rapidez e segurança, sem se perder no tempo. Quando o resultado saiu, ela mal pôde acreditar: havia passado em primeiro lugar! A partir daquele dia, a jovem entendeu que o segredo nunca foi estudar mais horas, e sim aprender a estudar do jeito certo. E assim ela realizou seu grande sonho, lembrando sempre que ler bem é o primeiro passo para vencer.'
+    ],
+    quiz:[
+      {q:'Qual era o sonho da jovem?',a:'passar em um concurso público',opts:['virar professora','passar em um concurso público','abrir uma escola']},
+      {q:'O que mudou a vida dela nos estudos?',a:'um método de ler mais rápido',opts:['estudar mais horas','um método de ler mais rápido','um professor particular']},
+      {q:'Em que lugar ela passou na prova?',a:'em primeiro lugar',opts:['em segundo lugar','em primeiro lugar','na última vaga']}
+    ]
+  }
+];
+
 const readerEl=document.getElementById('reader');
 const timerEl=document.getElementById('timer');
+const previewEl=document.getElementById('preview');
+const chooserEl=document.getElementById('chooser');
+const seeStoriesBtn=document.getElementById('seeStoriesBtn');
 const startBtn=document.getElementById('startBtn');
+const chooseBtn=document.getElementById('chooseBtn');
 const stopBtn=document.getElementById('stopBtn');
 const resultEl=document.getElementById('result');
 const quizEl=document.getElementById('quiz');
 const captureEl=document.getElementById('capture');
-const storyText=[...readerEl.querySelectorAll('p:not(.title)')].map(p=>p.textContent).join(' ').replace(/\s+/g,' ').trim();
-const wordCount=storyText.split(/\s+/).filter(w=>/[a-zà-ú0-9]/i.test(w)).length;
-let t0=0,raf=null;
-function fmt(ms){const s=ms/1000;const m=Math.floor(s/60);const sec=Math.floor(s%60);const d=Math.floor((ms%1000)/100);return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}<span class="ms">.${d}</span>`;}
+const storyImg=document.getElementById('storyImg');
+
+let currentStory=STORIES[0];
+let wordCount=0;
+let t0=0,raf=null,countTimer=null;
+
+function countWords(text){return text.split(/\s+/).filter(w=>/[a-zà-ú0-9]/i.test(w)).length;}
+
+function wireQuiz(){
+  quizEl.querySelectorAll('.q').forEach(q=>{
+    const answer=q.dataset.answer.toLowerCase();
+    q.querySelectorAll('.opt').forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        q.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+        if(opt.textContent.trim().toLowerCase()===answer)opt.classList.add('right');
+        else{opt.classList.add('wrong');q.querySelectorAll('.opt').forEach(o=>{if(o.textContent.trim().toLowerCase()===answer)o.classList.add('right');});}
+      });
+    });
+  });
+}
+
+function selectStory(id){
+  currentStory=STORIES.find(s=>s.id===id)||STORIES[0];
+  wordCount=countWords(currentStory.paras.join(' '));
+  document.getElementById('previewTitle').textContent=currentStory.title;
+  document.getElementById('previewTeaser').textContent=currentStory.teaser;
+  document.getElementById('previewMeta').textContent='\u2248 '+wordCount+' palavras \u00b7 cerca de 1 minuto de leitura';
+  storyImg.src=currentStory.img;storyImg.style.display='';
+  document.getElementById('readerTitle').textContent=currentStory.title;
+  document.getElementById('readerBody').innerHTML=currentStory.paras.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('quizBody').innerHTML=currentStory.quiz.map(q=>
+    '<div class="q" data-answer="'+q.a+'"><div class="qt">'+q.q+'</div><div class="opts">'+q.opts.map(o=>'<span class="opt">'+o+'</span>').join('')+'</div></div>'
+  ).join('');
+  wireQuiz();
+}
+
+function buildStoryGrid(){
+  const grid=document.getElementById('storyGrid');grid.innerHTML='';
+  STORIES.forEach(s=>{
+    const card=document.createElement('button');
+    card.className='story-pick'+(s.id===currentStory.id?' on':'');
+    card.innerHTML='<span class="sp-title">'+s.title+'</span><span class="sp-teaser">'+s.teaser+'</span>'+(s.id===currentStory.id?'<span class="sp-badge">\u2713 selecionado</span>':'');
+    card.addEventListener('click',()=>{selectStory(s.id);setState('preview');});
+    grid.appendChild(card);
+  });
+}
+
+function setState(state){
+  previewEl.style.display='none';
+  chooserEl.style.display='none';
+  readerEl.classList.remove('show');
+  seeStoriesBtn.style.display='none';
+  startBtn.style.display='none';
+  chooseBtn.style.display='none';
+  stopBtn.style.display='none';
+  if(state!=='result'){resultEl.classList.remove('show');captureEl.classList.remove('show');quizEl.classList.remove('show');}
+  timerEl.style.display=(state==='intro'||state==='choosing')?'none':'block';
+  if(state==='intro'){
+    seeStoriesBtn.style.display='inline-flex';
+  }else if(state==='preview'){
+    previewEl.style.display='block';
+    startBtn.style.display='inline-flex';
+    chooseBtn.style.display='inline-flex';
+    timerEl.innerHTML='00:00<span class="ms">.0</span>';
+    document.getElementById('gaugeFill').style.width='0';
+    document.getElementById('ppmNum').firstChild.textContent='0';
+  }else if(state==='choosing'){
+    buildStoryGrid();
+    chooserEl.style.display='block';
+  }else if(state==='reading'){
+    readerEl.classList.add('show');
+    stopBtn.style.display='inline-flex';
+  }
+}
+
+function fmt(ms){const s=ms/1000;const m=Math.floor(s/60);const sec=Math.floor(s%60);const d=Math.floor((ms%1000)/100);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')+'<span class="ms">.'+d+'</span>';}
 function tick(){timerEl.innerHTML=fmt(performance.now()-t0);raf=requestAnimationFrame(tick);}
-startBtn.addEventListener('click',()=>{readerEl.classList.add('show');startBtn.style.display='none';stopBtn.style.display='inline-flex';t0=performance.now();tick();});
+
+seeStoriesBtn.addEventListener('click',()=>{selectStory(currentStory.id);setState('preview');});
+chooseBtn.addEventListener('click',()=>setState('choosing'));
+startBtn.addEventListener('click',()=>{setState('reading');t0=performance.now();tick();});
+
 function finishReading(){
-  cancelAnimationFrame(raf);
+  if(!raf)return;
+  cancelAnimationFrame(raf);raf=null;
   const min=(performance.now()-t0)/60000;
   const ppm=Math.max(40,Math.round(wordCount/min));
-  stopBtn.style.display='none';
   readerEl.classList.remove('show');
+  stopBtn.style.display='none';
   showResult(ppm);
 }
 stopBtn.addEventListener('click',finishReading);
 document.getElementById('stopBtnBottom').addEventListener('click',finishReading);
-let countTimer=null;
+
 function showResult(ppm){
   resultEl.classList.add('show');
-  document.getElementById('wordInfo').textContent=`palavras por minuto · ${wordCount} palavras lidas`;
+  document.getElementById('wordInfo').textContent='palavras por minuto \u00b7 '+wordCount+' palavras lidas';
   const numEl=document.getElementById('ppmNum');let cur=0;const step=Math.max(1,Math.round(ppm/45));
   clearInterval(countTimer);
   countTimer=setInterval(()=>{cur+=step;if(cur>=ppm){cur=ppm;clearInterval(countTimer);}numEl.firstChild.textContent=cur;},22);
@@ -510,76 +675,73 @@ function showResult(ppm){
   else{v="Velocidade de leitor treinado.";s="Impressionante. Agora o jogo é retenção e constância: ler rápido e lembrar de tudo. Confira sua absorção abaixo.";}
   document.getElementById('verdict').textContent=v;document.getElementById('verdictSub').textContent=s;
   const ct=document.getElementById('captureTitle');
-  if(ppm<280){ct.innerHTML=`Você lê <em>${ppm}</em> ppm. Quer chegar a <em>${ppm*2}</em>?`;}
-  else{ct.innerHTML=`Você já lê rápido (<em>${ppm}</em> ppm). Quer ler rápido <em>e lembrar de tudo?</em>`;}
+  if(ppm<280){ct.innerHTML='Você lê <em>'+ppm+'</em> ppm. Quer chegar a <em>'+(ppm*2)+'</em>?';}
+  else{ct.innerHTML='Você já lê rápido (<em>'+ppm+'</em> ppm). Quer ler rápido <em>e lembrar de tudo?</em>';}
   setTimeout(()=>captureEl.classList.add('show'),350);
   setTimeout(()=>quizEl.classList.add('show'),800);
   setTimeout(()=>resultEl.scrollIntoView({behavior:'smooth',block:'start'}),250);
 }
-document.querySelectorAll('#quiz .q').forEach(q=>{
-  const answer=q.dataset.answer;
-  q.querySelectorAll('.opt').forEach(opt=>{
-    opt.addEventListener('click',()=>{
-      q.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
-      if(opt.textContent.trim().toLowerCase()===answer)opt.classList.add('right');
-      else{opt.classList.add('wrong');q.querySelectorAll('.opt').forEach(o=>{if(o.textContent.trim().toLowerCase()===answer)o.classList.add('right');});}
-    });
-  });
-});
+
 document.getElementById('emailBtn').addEventListener('click',()=>{
   const v=document.getElementById('emailInput').value.trim();
   if(!/.+@.+\..+/.test(v)){document.getElementById('emailInput').focus();return;}
   document.getElementById('emailOk').classList.add('show');   // aqui dispara o envio dos exercícios pro e-mail/Hotmart na versão real
 });
+
 function resetTest(){
-  cancelAnimationFrame(raf);clearInterval(countTimer);
-  timerEl.innerHTML='00:00<span class="ms">.0</span>';
-  startBtn.style.display='inline-flex';stopBtn.style.display='none';
-  readerEl.classList.remove('show');
-  resultEl.classList.remove('show');captureEl.classList.remove('show');quizEl.classList.remove('show');
-  document.getElementById('gaugeFill').style.width='0';
-  document.getElementById('ppmNum').firstChild.textContent='0';
+  cancelAnimationFrame(raf);raf=null;clearInterval(countTimer);
   document.getElementById('emailOk').classList.remove('show');
   document.getElementById('emailInput').value='';
-  document.querySelectorAll('#quiz .opt').forEach(o=>o.classList.remove('right','wrong','disabled'));
+  selectStory(currentStory.id);
+  setState('preview');
   document.getElementById('teste').scrollIntoView({behavior:'smooth',block:'start'});
 }
 document.getElementById('redoBtn').addEventListener('click',resetTest);
 
-/* ===== 13ms FLASH ===== */
-const scenes=[
-  {name:'casa',svg:`<svg viewBox="0 0 100 100"><rect x="22" y="45" width="56" height="40" fill="#c0392b"/><polygon points="18,45 50,18 82,45" fill="#7a2e22"/><rect x="42" y="60" width="16" height="25" fill="#3d2b1f"/><rect x="28" y="52" width="11" height="11" fill="#f1c40f"/><circle cx="78" cy="20" r="9" fill="#f39c12"/></svg>`},
-  {name:'barco',svg:`<svg viewBox="0 0 100 100"><rect y="62" width="100" height="38" fill="#2980b9"/><polygon points="50,20 50,60 22,60" fill="#ecf0f1"/><polygon points="54,28 54,60 76,60" fill="#bdc3c7"/><rect x="49" y="20" width="2.5" height="42" fill="#5d4037"/><circle cx="20" cy="22" r="3" fill="#34495e"/><circle cx="30" cy="18" r="3" fill="#34495e"/></svg>`},
-  {name:'gato',svg:`<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="28" fill="#e67e22"/><polygon points="30,35 26,12 44,28" fill="#e67e22"/><polygon points="70,35 74,12 56,28" fill="#e67e22"/><circle cx="40" cy="52" r="4" fill="#2c3e50"/><circle cx="60" cy="52" r="4" fill="#2c3e50"/><polygon points="46,60 54,60 50,66" fill="#c0392b"/></svg>`},
-  {name:'xícara',svg:`<svg viewBox="0 0 100 100"><rect x="28" y="42" width="40" height="34" rx="5" fill="#ecf0f1"/><path d="M68 50 q16 0 16 12 t-16 12" fill="none" stroke="#ecf0f1" stroke-width="6"/><rect x="26" y="76" width="50" height="7" rx="3" fill="#bdc3c7"/><path d="M40 30 q4 -8 0 -14 M52 30 q4 -8 0 -14" stroke="#95a5a6" stroke-width="3" fill="none"/></svg>`},
-  {name:'árvore',svg:`<svg viewBox="0 0 100 100"><rect x="45" y="55" width="10" height="35" fill="#6e4a2b"/><circle cx="50" cy="42" r="26" fill="#27ae60"/><circle cx="34" cy="50" r="16" fill="#229954"/><circle cx="66" cy="50" r="16" fill="#229954"/></svg>`},
-  {name:'estrela',svg:`<svg viewBox="0 0 100 100"><polygon points="50,12 61,40 92,40 67,59 76,89 50,70 24,89 33,59 8,40 39,40" fill="#f1c40f"/></svg>`},
+/* estado inicial */
+selectStory('princesa');
+setState('intro');
+
+/* ===== EXPERIMENTO 03 — SLIDESHOW RELÂMPAGO ===== */
+const SLIDES=[
+  {src:'img/veleiro.webp',label:'um veleiro ao pôr do sol'},
+  {src:'img/arvore.webp',label:'uma árvore no campo'},
+  {src:'img/crianca.webp',label:'uma criança na água'},
+  {src:'img/cavalos.webp',label:'cavalos num pasto'}
 ];
-let flashMs=600;
+SLIDES.forEach(s=>{const i=new Image();i.src=s.src;}); /* pré-carrega para a rajada não travar */
+let flashMs=200;
 document.querySelectorAll('#durRow .chip').forEach(c=>{c.addEventListener('click',()=>{document.querySelectorAll('#durRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');flashMs=+c.dataset.ms;});});
 const flashBtn=document.getElementById('flashBtn'),flashbox=document.getElementById('flashbox'),countdown=document.getElementById('countdown'),stageIdle=document.getElementById('stageIdle'),flashQ=document.getElementById('flashQ');
 flashBtn.addEventListener('click',()=>{
   flashBtn.disabled=true;flashBtn.style.opacity=.5;flashQ.classList.remove('show');stageIdle.style.display='none';countdown.style.display='block';
   let n=3;countdown.textContent=n;
-  const cd=setInterval(()=>{n--;if(n>0){countdown.textContent=n;}else{clearInterval(cd);countdown.style.display='none';doFlash();}},650);
+  const cd=setInterval(()=>{n--;if(n>0){countdown.textContent=n;}else{clearInterval(cd);countdown.style.display='none';runShow();}},650);
 });
-function doFlash(){
-  const scene=scenes[Math.floor(Math.random()*scenes.length)];
-  flashbox.innerHTML=scene.svg;flashbox.style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{setTimeout(()=>{flashbox.style.display='none';flashbox.innerHTML='';askFlash(scene.name);},flashMs);}));
+function runShow(){
+  const order=SLIDES.map((s,i)=>i).sort(()=>Math.random()-.5);
+  flashbox.innerHTML='<img alt="">';
+  const imgEl=flashbox.querySelector('img');
+  flashbox.style.display='flex';
+  let k=0;
+  function next(){
+    if(k>=order.length){flashbox.style.display='none';flashbox.innerHTML='';askShow();return;}
+    imgEl.src=SLIDES[order[k]].src;k++;
+    setTimeout(next,flashMs);
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(next));
 }
-function askFlash(correct){
-  const distract=scenes.map(s=>s.name).filter(n=>n!==correct).sort(()=>Math.random()-.5).slice(0,3);
-  const opts=[correct,...distract].sort(()=>Math.random()-.5);
+function askShow(){
+  const opts=SLIDES.slice().sort(()=>Math.random()-.5);
   const box=document.getElementById('flashOpts');box.innerHTML='';
-  opts.forEach(name=>{
-    const el=document.createElement('span');el.className='opt';el.textContent=name;
+  opts.forEach(s=>{
+    const el=document.createElement('button');el.className='img-opt';
+    el.innerHTML='<img src="'+s.src+'" alt=""><span>'+s.label+'</span>';
     el.addEventListener('click',()=>{
-      box.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
-      if(name===correct)el.classList.add('right');
-      else{el.classList.add('wrong');box.querySelectorAll('.opt').forEach(o=>{if(o.textContent===correct)o.classList.add('right');});}
-      stageIdle.innerHTML='Viu? Mesmo num piscar, seu cérebro registrou.<br>É essa capacidade que a leitura dinâmica treina.';stageIdle.style.display='block';
-      flashBtn.disabled=false;flashBtn.style.opacity=1;flashBtn.innerHTML='Piscar de novo <span class="arrow">→</span>';
+      /* não importa qual a pessoa marca: as quatro passaram, então todas viram "vistas" */
+      box.querySelectorAll('.img-opt').forEach(o=>{o.classList.add('disabled','seen');const sp=o.querySelector('span');sp.textContent='\u2713 '+sp.textContent.replace(/^\u2713 /,'');});
+      stageIdle.innerHTML='As quatro passaram pela tela. Viu? Mesmo num piscar, seu cérebro registrou.<br>É essa capacidade que a leitura dinâmica treina.';stageIdle.style.display='block';
+      flashBtn.disabled=false;flashBtn.style.opacity=1;flashBtn.innerHTML='Rodar de novo <span class="arrow">→</span>';
     });
     box.appendChild(el);
   });
@@ -590,8 +752,11 @@ function askFlash(correct){
 const rsvpWordEl=document.getElementById('rsvpWord'),rsvpBtn=document.getElementById('rsvpBtn'),rsvpStop=document.getElementById('rsvpStop');
 let rsvpWpm=300,rsvpActive=false,rsvpPaused=false,rsvpIndex=0,rsvpTimer=null;
 document.querySelectorAll('#speedRow .chip').forEach(c=>{c.addEventListener('click',()=>{document.querySelectorAll('#speedRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');rsvpWpm=+c.dataset.wpm;});});
-const rsvpText="A princesa e o sapo. "+storyText;
-const rsvpWords=rsvpText.trim().split(/\s+/);
+function rsvpBuildWords(){
+  const s=(typeof currentStory!=='undefined'&&currentStory)?currentStory:STORIES[0];
+  return (s.title+'. '+s.paras.join(' ')).trim().split(/\s+/);
+}
+let rsvpWords=rsvpBuildWords();
 function rsvpStep(){
   if(!rsvpActive||rsvpPaused)return;
   if(rsvpIndex>=rsvpWords.length){rsvpFinish();return;}
@@ -602,7 +767,7 @@ function rsvpStep(){
 function rsvpFinish(){rsvpActive=false;rsvpPaused=false;rsvpWordEl.textContent='✓ fim';rsvpBtn.innerHTML='Ler de novo <span class="arrow">→</span>';rsvpStop.style.display='none';}
 function rsvpReset(){clearTimeout(rsvpTimer);rsvpActive=false;rsvpPaused=false;rsvpIndex=0;rsvpWordEl.textContent='pronto?';rsvpBtn.innerHTML='Iniciar leitura guiada <span class="arrow">→</span>';rsvpStop.style.display='none';}
 rsvpBtn.addEventListener('click',()=>{
-  if(!rsvpActive){rsvpIndex=0;rsvpActive=true;rsvpPaused=false;rsvpBtn.innerHTML='Pausar';rsvpStop.style.display='inline-flex';rsvpStep();}
+  if(!rsvpActive){rsvpWords=rsvpBuildWords();rsvpIndex=0;rsvpActive=true;rsvpPaused=false;rsvpBtn.innerHTML='Pausar';rsvpStop.style.display='inline-flex';rsvpStep();}
   else if(!rsvpPaused){rsvpPaused=true;clearTimeout(rsvpTimer);rsvpBtn.innerHTML='Retomar <span class="arrow">→</span>';}
   else{rsvpPaused=false;rsvpBtn.innerHTML='Pausar';rsvpStep();}
 });
